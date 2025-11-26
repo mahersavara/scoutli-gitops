@@ -1,0 +1,16 @@
+nameOverride: frontend
+fullnameOverride: scoutli-frontend
+
+replicaCount: 1
+
+image:
+  repository: 147795259387.dkr.ecr.ap-southeast-1.amazonaws.com/scoutli-frontend
+  tag: "latest"
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
