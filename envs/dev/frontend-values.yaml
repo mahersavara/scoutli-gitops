@@ -5,7 +5,7 @@ replicaCount: 1
 
 image:
   repository: 147795259387.dkr.ecr.ap-southeast-1.amazonaws.com/scoutli-frontend
-  tag: "latest" # CI sẽ update cái này
+  tag: "ca25c46e88aa53822fe53b685150245ea6df6a99" # CI sẽ update cái này
   pullPolicy: Always
 
 service:
