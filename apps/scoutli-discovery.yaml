@@ -18,6 +18,8 @@ spec:
           tag: latest
         service:
           port: 8080
+        env:
+          DB_NAME: "scoutli_discovery"
   destination:
     server: https://kubernetes.default.svc
     namespace: scoutli-app
