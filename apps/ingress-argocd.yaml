@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-server-ingress
+  namespace: argocd # ArgoCD nằm trong namespace argocd
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    # Cấu hình rewrite target cho ArgoCD
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    # Tắt SSL redirect vì ArgoCD đang chạy --insecure
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+    - host: argocd.journeywriter.space
+      http:
+        paths:
+          - path: /(.*) # Route mọi thứ sau /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server # Tên Service của ArgoCD
+                port:
+                  number: 80 # Port HTTP của ArgoCD
+  # Tạm thời không cấu hình TLS, sẽ thêm sau khi có cert-manager
