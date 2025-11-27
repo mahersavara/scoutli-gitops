@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: scoutli-discovery
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/mahersavara/scoutli-helm.git
+    targetRevision: HEAD
+    path: charts/scoutli-microservice
+    helm:
+      values: |
+        image:
+          repository: 147795259387.dkr.ecr.ap-southeast-1.amazonaws.com/scoutli-discovery-service
+          tag: latest
+        service:
+          port: 8080
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: scoutli-app
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
