@@ -4,10 +4,11 @@ metadata:
   name: scoutli-frontend-ingress
   namespace: scoutli-app
   annotations:
+    # Giữ lại annotation cũ cho tương thích ngược
     kubernetes.io/ingress.class: nginx
-    # Bạn có thể thêm các annotation khác cho ALB/Nginx tại đây
-    # ví dụ: nginx.ingress.kubernetes.io/ssl-redirect: "false" nếu cần
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
+  ingressClassName: nginx # Thêm dòng này
   rules:
     - host: www.journeywriter.space
       http:
@@ -16,11 +17,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: scoutli-frontend-scoutli-microservice # Tên Service của Frontend
+                name: scoutli-frontend-scoutli-microservice
                 port:
-                  number: 80 # Port của Service Frontend (Nginx)
-  # Nếu muốn cấu hình TLS/HTTPS, bạn sẽ cần cert-manager và Secret TLS
-  # tls:
-  #   - hosts:
-  #       - www.journeywriter.space
-  #     secretName: frontend-tls-secret
+                  number: 80
