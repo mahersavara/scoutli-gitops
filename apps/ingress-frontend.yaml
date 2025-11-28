@@ -4,11 +4,13 @@ metadata:
   name: scoutli-frontend-ingress
   namespace: scoutli-app
   annotations:
-    # Giữ lại annotation cũ cho tương thích ngược
     kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
-  ingressClassName: nginx # Thêm dòng này
+  tls:
+    - hosts:
+        - www.journeywriter.space
+      secretName: frontend-tls-secret
   rules:
     - host: www.journeywriter.space
       http:

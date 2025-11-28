@@ -5,13 +5,16 @@ metadata:
   namespace: argocd
   annotations:
     kubernetes.io/ingress.class: nginx
-    # Remove rewrite-target for subdomain based routing
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-    # Enable SSL redirect so HTTP -> HTTPS
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - argocd.journeywriter.space
+      secretName: argocd-tls-secret
   rules:
     - host: argocd.journeywriter.space
       http:
