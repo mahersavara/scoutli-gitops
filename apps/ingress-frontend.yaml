@@ -9,10 +9,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - www.journeywriter.space
+        - www.journeywriter.click
       secretName: frontend-tls-secret
   rules:
-    - host: www.journeywriter.space
+    - host: www.journeywriter.click
       http:
         paths:
           - path: /
@@ -22,3 +22,4 @@ spec:
                 name: scoutli-frontend-scoutli-microservice
                 port:
                   number: 80
+
