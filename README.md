@@ -5,7 +5,7 @@ This repository is the **Source of Truth** for the state of the Scoutli applicat
 ## How it works
 
 1.  **GitHub Actions (CI)** builds Docker images and pushes them to ECR.
-2.  **GitHub Actions** then updates the `values.yaml` in this repository (specifically the `image.tag` field) with the new commit SHA.
+2.  **GitHub Actions** then updates the environment values file in this repository (the `image.tag` field) with the new commit SHA.
 3.  **ArgoCD** (running in the cluster) detects the change in this repository.
 4.  **ArgoCD** syncs the state, deploying the new image version to the EKS cluster.
 
@@ -15,17 +15,25 @@ We use the **App of Apps** pattern:
 
 ```
 .
-├── bootstrap/          # The "Parent" Application that manages other Apps
-│   └── root-app.yaml
-├── apps/               # Application definitions
-│   ├── scoutli-prod.yaml
-│   ├── scoutli-staging.yaml
-│   └── ...
-└── envs/               # Environment-specific configurations
-    ├── prod/
-    │   └── values.yaml # The file updated by CI
-    └── staging/
-        └── values.yaml
+├── root-app.yaml               # Parent Application that manages everything in apps/
+├── apps/                       # One ArgoCD Application per service, plus ingresses
+│   ├── scoutli-auth.yaml
+│   ├── scoutli-discovery.yaml
+│   ├── scoutli-interaction.yaml
+│   ├── scoutli-frontend.yaml
+│   ├── ingress-frontend.yaml
+│   └── ingress-argocd.yaml
+├── envs/
+│   └── dev/
+│       ├── backend-values.yaml  # Image tag updated by CI
+│       └── frontend-values.yaml
+├── bootstrap/                   # Applied once, by hand
+│   ├── root-app.yaml
+│   ├── cluster-issuer.yaml      # cert-manager ClusterIssuer
+│   ├── db-init-job.yaml         # Creates per-service databases on RDS
+│   └── db-secret.example.yaml   # Template only, see "Secrets" below
+└── configs/
+    └── keycloak/scoutli-realm.json  # Demo realm (dev-only credentials)
 ```
 
 ## ArgoCD Setup
@@ -35,3 +43,17 @@ To bootstrap the cluster:
 ```bash
 kubectl apply -f bootstrap/root-app.yaml
 ```
+
+## Secrets
+
+Real credentials are never committed. Create the database secret locally from the template:
+
+```bash
+cp bootstrap/db-secret.example.yaml bootstrap/db-secret.yaml   # git-ignored
+# fill in DB_HOST / DB_PASSWORD, then:
+kubectl apply -f bootstrap/db-secret.yaml
+```
+
+For a longer-lived setup, use [External Secrets Operator](https://external-secrets.io/) with AWS Secrets Manager or Sealed Secrets instead of a manual step.
+
+The Keycloak realm export contains **dev-only demo users and client secrets**. Override them before using the realm anywhere real.

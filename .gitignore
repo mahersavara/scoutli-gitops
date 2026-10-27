@@ -1,0 +1,3 @@
+
+# Real credentials stay out of Git; copy the example and apply it manually
+bootstrap/db-secret.yaml
